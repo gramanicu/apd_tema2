@@ -12,7 +12,6 @@ import static java.lang.Thread.sleep;
  * clase anonime.
  */
 public class IntersectionHandlerFactory {
-
     public static IntersectionHandler getHandler(String handlerType) {
         // simple semaphore intersection
         // max random N cars roundabout (s time to exit each of them)
@@ -28,24 +27,7 @@ public class IntersectionHandlerFactory {
         // unmarked intersection
         // cars racing
         return switch (handlerType) {
-            case "simple_semaphore" -> new IntersectionHandler() {
-                @Override
-                public void handle(Car car) {
-
-                }
-            };
-            case "simple_n_roundabout" -> new IntersectionHandler() {
-                @Override
-                public void handle(Car car) {
-
-                }
-            };
-            case "simple_strict_1_car_roundabout" -> new IntersectionHandler() {
-                @Override
-                public void handle(Car car) {
-
-                }
-            };
+            case "simple_semaphore", "simple_n_roundabout", "simple_strict_1_car_roundabout" -> car -> Main.intersection.wait_in_intersection(car);
             case "simple_strict_x_car_roundabout" -> new IntersectionHandler() {
                 @Override
                 public void handle(Car car) {

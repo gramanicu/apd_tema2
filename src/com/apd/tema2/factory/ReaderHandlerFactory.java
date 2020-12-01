@@ -4,6 +4,7 @@ import com.apd.tema2.Main;
 import com.apd.tema2.entities.Pedestrians;
 import com.apd.tema2.entities.ReaderHandler;
 import com.apd.tema2.intersections.*;
+import com.apd.tema2.io.Reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,25 +28,22 @@ public class ReaderHandlerFactory {
         // unmarked intersection
         // cars racing
         return switch (handlerType) {
-            case "simple_semaphore" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) {
-                    // Exemplu de utilizare:
-                    // Main.intersection = IntersectionFactory.getIntersection("simpleIntersection");
-                }
-            };
-            case "simple_n_roundabout" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    // To parse input line use:
-                    // String[] line = br.readLine().split(" ");
-                }
-            };
-            case "simple_strict_1_car_roundabout" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
+            case "simple_semaphore" -> (handlerType1, br) -> Main.intersection = IntersectionFactory.getIntersection(handlerType1);
+            case "simple_n_roundabout" -> (handlerType12, br) -> {
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType12);
 
-                }
+                int roundaboutCapacity = Integer.parseInt(line[0]);
+                int exitTime = Integer.parseInt(line[1]);
+                ((SimpleNRoundabout) Main.intersection).setupIntersection(roundaboutCapacity, exitTime);
+            };
+            case "simple_strict_1_car_roundabout" -> (handlerType13, br) -> {
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType13);
+
+                int directionsCount = Integer.parseInt(line[0]);
+                int exitTime = Integer.parseInt(line[1]);
+                ((SimpleStrict1CarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime);
             };
             case "simple_strict_x_car_roundabout" -> new ReaderHandler() {
                 @Override
