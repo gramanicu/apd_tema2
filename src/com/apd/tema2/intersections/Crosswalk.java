@@ -25,5 +25,13 @@ public class Crosswalk implements Intersection {
                 e.printStackTrace();
             }
         }
+
+        boolean hadGreen = car.couldPass();
+        boolean hasGreen = !Main.pedestrians.isPass();
+        if(hadGreen && !hasGreen) {
+            System.out.println("Car " + car.getId() + " has now red light");
+        } else if (!hadGreen && hasGreen) {
+            System.out.println("Car " + car.getId() + " has now green light");
+        }
     }
 }
