@@ -47,18 +47,18 @@ public class SimpleStrictXCarRoundabout implements Intersection {
 
     @Override
     public void wait_in_intersection(Car car) {
-        // Wait all cars to arrive at the roundabout
-        try {
-            barrier.await();
-        } catch (InterruptedException | BrokenBarrierException e) {
-            e.printStackTrace();
-        }
-
         // Task specific output
         if(taskNumber == 5) {
             System.out.println("Car " + car.getId() + " has reached the roundabout from lane " + car.getStartDirection());
         } else {
             System.out.println("Car " + car.getId() + " has reached the roundabout");
+        }
+
+        // Wait all cars to arrive at the roundabout
+        try {
+            barrier.await();
+        } catch (InterruptedException | BrokenBarrierException e) {
+            e.printStackTrace();
         }
 
         // Wait for all lanes to be occupied and enter the roundabout

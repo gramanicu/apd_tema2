@@ -61,11 +61,14 @@ public class ReaderHandlerFactory {
                 int carsPerDirection = Integer.parseInt(line[2]);
                 ((SimpleStrictXCarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, carsPerDirection, 5);
             };
-            case "priority_intersection" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    
-                }
+            case "priority_intersection" -> (handlerType6, br) -> {
+
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType6);
+
+                int highPriorityCars = Integer.parseInt(line[0]);
+                int lowPriorityCars = Integer.parseInt(line[1]);
+                ((PriorityIntersection) Main.intersection).setupIntersection(lowPriorityCars, highPriorityCars);
             };
             case "crosswalk" -> new ReaderHandler() {
                 @Override

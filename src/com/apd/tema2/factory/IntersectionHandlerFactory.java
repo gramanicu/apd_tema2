@@ -34,9 +34,8 @@ public class IntersectionHandlerFactory {
                     sleep(car.getWaitingTime());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                } // NU MODIFICATI
+                }
 
-                // Continuati de aici
                 Main.intersection.wait_in_intersection(car);
             };
             case "priority_intersection" -> new IntersectionHandler() {
@@ -51,6 +50,7 @@ public class IntersectionHandlerFactory {
                     } // NU MODIFICATI
 
                     // Continuati de aici
+                    Main.intersection.wait_in_intersection(car);
                 }
             };
             case "crosswalk" -> new IntersectionHandler() {

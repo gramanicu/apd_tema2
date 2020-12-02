@@ -16,7 +16,8 @@ public class IntersectionFactory {
             entry("simple_n_roundabout", new SimpleNRoundabout()),
             entry("simple_strict_1_car_roundabout", new SimpleStrictXCarRoundabout()),
             entry("simple_strict_x_car_roundabout", new SimpleStrictXCarRoundabout()),
-            entry("simple_max_x_car_roundabout", new SimpleStrictXCarRoundabout())
+            entry("simple_max_x_car_roundabout", new SimpleStrictXCarRoundabout()),
+            entry("priority_intersection", new PriorityIntersection())
     );
 
     public static Intersection getIntersection(String handlerType) {
