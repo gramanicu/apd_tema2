@@ -50,6 +50,8 @@ public class SimpleStrictXCarRoundabout implements Intersection {
         // Task specific output
         if(taskNumber == 5) {
             System.out.println("Car " + car.getId() + " has reached the roundabout from lane " + car.getStartDirection());
+        } else if (taskNumber == 4) {
+            System.out.println("Car " + car.getId() + " has reached the roundabout, now waiting...");
         } else {
             System.out.println("Car " + car.getId() + " has reached the roundabout");
         }
