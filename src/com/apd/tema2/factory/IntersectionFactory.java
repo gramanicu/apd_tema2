@@ -14,7 +14,9 @@ public class IntersectionFactory {
     private static final Map<String, Intersection> cache = Map.ofEntries(
             entry("simple_semaphore", new SimpleSemaphore()),
             entry("simple_n_roundabout", new SimpleNRoundabout()),
-            entry("simple_strict_1_car_roundabout", new SimpleStrict1CarRoundabout())
+            entry("simple_strict_1_car_roundabout", new SimpleStrictXCarRoundabout()),
+            entry("simple_strict_x_car_roundabout", new SimpleStrictXCarRoundabout()),
+            entry("simple_max_x_car_roundabout", new SimpleStrictXCarRoundabout())
     );
 
     public static Intersection getIntersection(String handlerType) {

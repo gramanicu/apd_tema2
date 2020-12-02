@@ -1,10 +1,8 @@
 package com.apd.tema2.factory;
 
 import com.apd.tema2.Main;
-import com.apd.tema2.entities.Pedestrians;
 import com.apd.tema2.entities.ReaderHandler;
 import com.apd.tema2.intersections.*;
-import com.apd.tema2.io.Reader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,33 +27,39 @@ public class ReaderHandlerFactory {
         // cars racing
         return switch (handlerType) {
             case "simple_semaphore" -> (handlerType1, br) -> Main.intersection = IntersectionFactory.getIntersection(handlerType1);
-            case "simple_n_roundabout" -> (handlerType12, br) -> {
+            case "simple_n_roundabout" -> (handlerType2, br) -> {
                 String[] line = br.readLine().split(" ");
-                Main.intersection = IntersectionFactory.getIntersection(handlerType12);
+                Main.intersection = IntersectionFactory.getIntersection(handlerType2);
 
                 int roundaboutCapacity = Integer.parseInt(line[0]);
                 int exitTime = Integer.parseInt(line[1]);
                 ((SimpleNRoundabout) Main.intersection).setupIntersection(roundaboutCapacity, exitTime);
             };
-            case "simple_strict_1_car_roundabout" -> (handlerType13, br) -> {
+            case "simple_strict_1_car_roundabout" -> (handlerType3, br) -> {
                 String[] line = br.readLine().split(" ");
-                Main.intersection = IntersectionFactory.getIntersection(handlerType13);
+                Main.intersection = IntersectionFactory.getIntersection(handlerType3);
 
                 int directionsCount = Integer.parseInt(line[0]);
                 int exitTime = Integer.parseInt(line[1]);
-                ((SimpleStrict1CarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime);
+                ((SimpleStrictXCarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, 1, 3);
             };
-            case "simple_strict_x_car_roundabout" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
+            case "simple_strict_x_car_roundabout" -> (handlerType4, br) -> {
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType4);
 
-                }
+                int directionsCount = Integer.parseInt(line[0]);
+                int exitTime = Integer.parseInt(line[1]);
+                int carsPerDirection = Integer.parseInt(line[2]);
+                ((SimpleStrictXCarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, carsPerDirection, 4);
             };
-            case "simple_max_x_car_roundabout" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    
-                }
+            case "simple_max_x_car_roundabout" -> (handlerType5, br) -> {
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType5);
+
+                int directionsCount = Integer.parseInt(line[0]);
+                int exitTime = Integer.parseInt(line[1]);
+                int carsPerDirection = Integer.parseInt(line[2]);
+                ((SimpleStrictXCarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, carsPerDirection, 5);
             };
             case "priority_intersection" -> new ReaderHandler() {
                 @Override
