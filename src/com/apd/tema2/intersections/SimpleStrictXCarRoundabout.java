@@ -10,6 +10,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 
+import static java.lang.Thread.sleep;
+
 public class SimpleStrictXCarRoundabout implements Intersection {
     private List<Semaphore> occupiedDirections;
     private CyclicBarrier barrier;
@@ -49,6 +51,12 @@ public class SimpleStrictXCarRoundabout implements Intersection {
     public void wait_in_intersection(Car car) {
         // Task specific output
         if(taskNumber == 5) {
+            // Moved the sleep/delay here
+            try {
+                sleep(car.getWaitingTime());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.println("Car " + car.getId() + " has reached the roundabout from lane " + car.getStartDirection());
         } else if (taskNumber == 4) {
             System.out.println("Car " + car.getId() + " has reached the roundabout, now waiting...");

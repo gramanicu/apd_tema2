@@ -9,6 +9,7 @@ public class Car implements Runnable {
     private final int endDirection;
     private final int priority;
     private final int waitingTime;
+    private boolean lastWasGreen = false;
     private final IntersectionHandler intersectionHandler;
 
     public Car(final int id, final int startDirection, final IntersectionHandler intersectionHandler) {
@@ -51,5 +52,21 @@ public class Car implements Runnable {
 
     public int getPriority() {
         return priority;
+    }
+
+    /**
+     * Set the last value of the semaphore
+     * @param couldPass If the car could pass the intersection
+     */
+    public void setLastPass(boolean couldPass) {
+        lastWasGreen = couldPass;
+    }
+
+    /**
+     * Get the last value of the semaphore
+     * @return If the car could pass the intersection
+     */
+    public final boolean couldPass() {
+        return lastWasGreen;
     }
 }

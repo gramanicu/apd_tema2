@@ -6,6 +6,8 @@ import com.apd.tema2.entities.Intersection;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import static java.lang.Thread.sleep;
+
 
 public class PriorityIntersection implements Intersection {
     private ArrayBlockingQueue<Integer> highPriorityQueue;
@@ -18,6 +20,13 @@ public class PriorityIntersection implements Intersection {
 
     @Override
     public void wait_in_intersection(Car car) {
+        // Moved the sleep/delay here
+        try {
+            sleep(car.getWaitingTime());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         if (car.getPriority() != 1) {
             highPriorityQueue.add(car.getId());
         } else {

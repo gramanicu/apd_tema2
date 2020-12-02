@@ -1,6 +1,7 @@
 package com.apd.tema2.factory;
 
 import com.apd.tema2.Main;
+import com.apd.tema2.entities.Pedestrians;
 import com.apd.tema2.entities.ReaderHandler;
 import com.apd.tema2.intersections.*;
 
@@ -73,7 +74,12 @@ public class ReaderHandlerFactory {
             case "crosswalk" -> new ReaderHandler() {
                 @Override
                 public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    
+                    String[] line = br.readLine().split(" ");
+                    Main.intersection = IntersectionFactory.getIntersection(handlerType);
+
+                    int execTime = Integer.parseInt(line[0]);
+                    int maxNumberPedestrians = Integer.parseInt(line[1]);
+                    Main.pedestrians = new Pedestrians(execTime, maxNumberPedestrians);
                 }
             };
             case "simple_maintenance" -> new ReaderHandler() {

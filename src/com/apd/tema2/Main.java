@@ -16,7 +16,6 @@ public class Main {
         Set<Thread> cars = fileReader.getCarsFromInput();
 
         for(Thread car : cars) {
-
             car.start();
         }
 
