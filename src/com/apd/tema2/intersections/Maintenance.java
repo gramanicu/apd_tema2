@@ -65,6 +65,25 @@ public class Maintenance implements Intersection {
 
     }
 
+    /**
+     * Set next active lane
+     */
+    private void setNextActive() {
+        destinationLane++;
+        if (destinationLane == availableLanes) {
+            destinationLane = 0;
+        }
+
+        if(freeLanes.get(destinationLane).size() == 0) {
+            for (int i = 0; i < availableLanes; i++) {
+                if(freeLanes.get(i).size() != 0) {
+                    destinationLane = i;
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
     public void wait_in_intersection(Car car) {
         // Wait all cars to arrive at the "intersection" and assign them to a waiting lane
@@ -85,6 +104,12 @@ public class Maintenance implements Intersection {
         while (true) {
             synchronized (this) {
                 int carLane = car.getStartDirection();
+
+                // Check that the destination is available
+                if(freeLanes.get(destinationLane).size() == 0) {
+                    setNextActive();
+                }
+
                 // Check if this car is on a active lane
                 if(carLane == freeLanes.get(destinationLane).peek()) {
                     // Check if this car is the car that should pass now
@@ -111,30 +136,22 @@ public class Maintenance implements Intersection {
                             // Make next lane active if enough cars passed
                             if(currentPassed == maxThroughput) {
                                 currentPassed = 0;
-                                destinationLane++;
-                                if(destinationLane == availableLanes) {
-                                    destinationLane = 0;
-                                }
+                                setNextActive();
                             }
                         } else if(currentPassed == maxThroughput) {
                             currentPassed = 0;
-                            if(task == 9) {
+                            if (task == 9) {
                                 System.out.println("The initial lane " + carLane + " has no permits and is moved to the back of the new lane queue");
                             }
 
                             // Put lane at the back of the queue if enough cars have passed
                             try {
                                 freeLanes.get(destinationLane).put(freeLanes.get(destinationLane).poll());
-
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
 
-                            // Make next lane active
-                            destinationLane++;
-                            if(destinationLane == availableLanes) {
-                                destinationLane = 0;
-                            }
+                            setNextActive();
                         }
 
                         break;
