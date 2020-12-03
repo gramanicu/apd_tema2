@@ -79,21 +79,21 @@ public class ReaderHandlerFactory {
                 int maxNumberPedestrians = Integer.parseInt(line[1]);
                 Main.pedestrians = new Pedestrians(execTime, maxNumberPedestrians);
             };
-            case "simple_maintenance" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    String[] line = br.readLine().split(" ");
-                    Main.intersection = IntersectionFactory.getIntersection(handlerType);
+            case "simple_maintenance" -> (handlerType8, br) -> {
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType8);
 
-                    int maxCars = Integer.parseInt(line[0]);
-                    ((Maintenance) Main.intersection).setupIntersection(maxCars, 1, 2);
-                }
+                int maxCars = Integer.parseInt(line[0]);
+                ((Maintenance) Main.intersection).setupIntersection(maxCars, 1, 2);
             };
-            case "complex_maintenance" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    
-                }
+            case "complex_maintenance" -> (handlerType9, br) -> {
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType9);
+
+                int maxCars = Integer.parseInt(line[0]);
+                int freeLanes = Integer.parseInt(line[1]);
+                int initialLanes = Integer.parseInt(line[1]);
+                ((Maintenance) Main.intersection).setupIntersection(maxCars, freeLanes, initialLanes);
             };
             case "railroad" -> new ReaderHandler() {
                 @Override

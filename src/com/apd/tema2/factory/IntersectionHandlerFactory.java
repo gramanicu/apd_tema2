@@ -27,13 +27,7 @@ public class IntersectionHandlerFactory {
         // unmarked intersection
         // cars racing
         return switch (handlerType) {
-            case "simple_semaphore", "simple_n_roundabout", "simple_strict_1_car_roundabout", "simple_strict_x_car_roundabout", "priority_intersection", "simple_max_x_car_roundabout", "crosswalk", "simple_maintenance" -> car -> Main.intersection.wait_in_intersection(car);
-            case "complex_maintenance" -> new IntersectionHandler() {
-                @Override
-                public void handle(Car car) {
-                    
-                }
-            };
+            case "simple_semaphore", "simple_n_roundabout", "simple_strict_1_car_roundabout", "simple_strict_x_car_roundabout", "priority_intersection", "simple_max_x_car_roundabout", "crosswalk", "simple_maintenance", "complex_maintenance" -> car -> Main.intersection.wait_in_intersection(car);
             case "railroad" -> new IntersectionHandler() {
                 @Override
                 public void handle(Car car) {

@@ -19,7 +19,8 @@ public class IntersectionFactory {
             entry("simple_max_x_car_roundabout", new StrictRoundabout()),
             entry("priority_intersection", new PriorityIntersection()),
             entry("crosswalk", new Crosswalk()),
-            entry("simple_maintenance", new Maintenance())
+            entry("simple_maintenance", new Maintenance()),
+            entry("complex_maintenance", new Maintenance())
     );
 
     public static Intersection getIntersection(String handlerType) {

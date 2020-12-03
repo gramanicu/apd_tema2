@@ -13,6 +13,9 @@ import java.util.concurrent.CyclicBarrier;
 
 public class Maintenance implements Intersection {
     private int maxThroughput;
+    private int destinationLane;
+    private int currentPassed;
+    private int availableLanes;
 
     private CyclicBarrier barrier;
 
@@ -37,6 +40,9 @@ public class Maintenance implements Intersection {
 
     public void setupIntersection(int maxThroughput, int _freeLanes, int initialLanes) {
         this.maxThroughput = maxThroughput;
+        currentPassed = 0;
+        destinationLane = 0;
+        availableLanes = _freeLanes;
 
         barrier = new CyclicBarrier(Main.carsNo);
         waitingLanes = new ArrayList<>(initialLanes);
@@ -71,20 +77,49 @@ public class Maintenance implements Intersection {
 
         while (true) {
             synchronized (this) {
-                if(car.getStartDirection() == freeLanes.get(0).peek()) {
-                    waitingLanes.get(car.getStartDirection()).poll();
-                    freeLanes.get(0).poll();
-                    System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has passed the bottleneck");
+                int carLane = car.getStartDirection();
+                // Check if this car is on a active lane
+                if(carLane == freeLanes.get(destinationLane).peek()) {
+                    // Check if this car is the car that should pass now
+                    if(car.getId() == waitingLanes.get(carLane).peek().id) {
+                        // Make the car pass
+                        System.out.println("Car " + car.getId() + " from side number " + carLane + " has passed the bottleneck");
+                        currentPassed++;
 
-                    // If there are more cars waiting on this lane, put it at the back of the queue
-                    if(waitingLanes.get(car.getStartDirection()).size() != 0) {
-                        try {
-                            freeLanes.get(0).put(car.getStartDirection());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                        // Remove car from the queue
+                        waitingLanes.get(carLane).poll();
+
+                        if(waitingLanes.get(carLane).size() == 0) {
+                            // Remove lane if it is empty
+                            freeLanes.get(destinationLane).poll();
+
+                            // Make next lane active if enough cars passed
+                            if(currentPassed == maxThroughput) {
+                                currentPassed = 0;
+                                destinationLane++;
+                                if(destinationLane == availableLanes) {
+                                    destinationLane = 0;
+                                }
+                            }
+                        } else if(currentPassed == maxThroughput) {
+                            currentPassed = 0;
+
+                            // Put lane at the back of the queue if enough cars have passed
+                            try {
+                                freeLanes.get(destinationLane).put(freeLanes.get(destinationLane).poll());
+
+                                // Make next lane active
+                                destinationLane++;
+                                if(destinationLane == availableLanes) {
+                                    destinationLane = 0;
+                                }
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+
+                        break;
                     }
-                    break;
                 }
             }
         }
