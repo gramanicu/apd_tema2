@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Semaphore;
 
 
 public class Maintenance implements Intersection {
@@ -19,6 +20,7 @@ public class Maintenance implements Intersection {
     private int task;
 
     private CyclicBarrier barrier;
+    private Semaphore semaphore;
 
     private List<ArrayBlockingQueue<CarInfo>> waitingLanes;
     private List<ArrayBlockingQueue<Integer>> freeLanes;
@@ -49,6 +51,7 @@ public class Maintenance implements Intersection {
         barrier = new CyclicBarrier(Main.carsNo);
         waitingLanes = new ArrayList<>(initialLanes);
         freeLanes = new ArrayList<>(_freeLanes);
+        semaphore = new Semaphore(1);
 
         for (int i = 0; i < initialLanes; i++) {
             waitingLanes.add(new ArrayBlockingQueue<CarInfo>(Main.carsNo));
@@ -87,13 +90,19 @@ public class Maintenance implements Intersection {
     @Override
     public void wait_in_intersection(Car car) {
         // Wait all cars to arrive at the "intersection" and assign them to a waiting lane
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        waitingLanes.get(car.getStartDirection()).add(new CarInfo(car));
         if(task == 8) {
             System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has reached the bottleneck");
         } else {
 
             System.out.println("Car " + car.getId() + " has come from lane number " + car.getStartDirection());
         }
-        waitingLanes.get(car.getStartDirection()).add(new CarInfo(car));
+        semaphore.release();
 
         try {
             barrier.await();
