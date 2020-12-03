@@ -12,7 +12,7 @@ import java.util.concurrent.Semaphore;
 
 import static java.lang.Thread.sleep;
 
-public class SimpleStrictXCarRoundabout implements Intersection {
+public class StrictRoundabout implements Intersection {
     private List<Semaphore> occupiedDirections;
     private CyclicBarrier barrier;
     private CyclicBarrier stepBarrier;

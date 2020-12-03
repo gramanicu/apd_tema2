@@ -34,7 +34,7 @@ public class ReaderHandlerFactory {
 
                 int roundaboutCapacity = Integer.parseInt(line[0]);
                 int exitTime = Integer.parseInt(line[1]);
-                ((SimpleNRoundabout) Main.intersection).setupIntersection(roundaboutCapacity, exitTime);
+                ((Roundabout) Main.intersection).setupIntersection(roundaboutCapacity, exitTime);
             };
             case "simple_strict_1_car_roundabout" -> (handlerType3, br) -> {
                 String[] line = br.readLine().split(" ");
@@ -42,7 +42,7 @@ public class ReaderHandlerFactory {
 
                 int directionsCount = Integer.parseInt(line[0]);
                 int exitTime = Integer.parseInt(line[1]);
-                ((SimpleStrictXCarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, 1, 3);
+                ((StrictRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, 1, 3);
             };
             case "simple_strict_x_car_roundabout" -> (handlerType4, br) -> {
                 String[] line = br.readLine().split(" ");
@@ -51,7 +51,7 @@ public class ReaderHandlerFactory {
                 int directionsCount = Integer.parseInt(line[0]);
                 int exitTime = Integer.parseInt(line[1]);
                 int carsPerDirection = Integer.parseInt(line[2]);
-                ((SimpleStrictXCarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, carsPerDirection, 4);
+                ((StrictRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, carsPerDirection, 4);
             };
             case "simple_max_x_car_roundabout" -> (handlerType5, br) -> {
                 String[] line = br.readLine().split(" ");
@@ -60,7 +60,7 @@ public class ReaderHandlerFactory {
                 int directionsCount = Integer.parseInt(line[0]);
                 int exitTime = Integer.parseInt(line[1]);
                 int carsPerDirection = Integer.parseInt(line[2]);
-                ((SimpleStrictXCarRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, carsPerDirection, 5);
+                ((StrictRoundabout) Main.intersection).setupIntersection(directionsCount, exitTime, carsPerDirection, 5);
             };
             case "priority_intersection" -> (handlerType6, br) -> {
 
@@ -71,21 +71,22 @@ public class ReaderHandlerFactory {
                 int lowPriorityCars = Integer.parseInt(line[1]);
                 ((PriorityIntersection) Main.intersection).setupIntersection(lowPriorityCars, highPriorityCars);
             };
-            case "crosswalk" -> new ReaderHandler() {
+            case "crosswalk" -> (handlerType7, br) -> {
+                String[] line = br.readLine().split(" ");
+                Main.intersection = IntersectionFactory.getIntersection(handlerType7);
+
+                int execTime = Integer.parseInt(line[0]);
+                int maxNumberPedestrians = Integer.parseInt(line[1]);
+                Main.pedestrians = new Pedestrians(execTime, maxNumberPedestrians);
+            };
+            case "simple_maintenance" -> new ReaderHandler() {
                 @Override
                 public void handle(final String handlerType, final BufferedReader br) throws IOException {
                     String[] line = br.readLine().split(" ");
                     Main.intersection = IntersectionFactory.getIntersection(handlerType);
 
-                    int execTime = Integer.parseInt(line[0]);
-                    int maxNumberPedestrians = Integer.parseInt(line[1]);
-                    Main.pedestrians = new Pedestrians(execTime, maxNumberPedestrians);
-                }
-            };
-            case "simple_maintenance" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    
+                    int maxCars = Integer.parseInt(line[0]);
+                    ((Maintenance) Main.intersection).setupIntersection(maxCars, 1, 2);
                 }
             };
             case "complex_maintenance" -> new ReaderHandler() {

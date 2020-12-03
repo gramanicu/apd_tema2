@@ -8,7 +8,7 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 
-public class SimpleNRoundabout implements Intersection {
+public class Roundabout implements Intersection {
     private Semaphore sem;
     private CyclicBarrier barrier;
     private int exitTime;
