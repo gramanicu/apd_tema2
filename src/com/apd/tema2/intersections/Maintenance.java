@@ -16,6 +16,7 @@ public class Maintenance implements Intersection {
     private int destinationLane;
     private int currentPassed;
     private int availableLanes;
+    private int task;
 
     private CyclicBarrier barrier;
 
@@ -38,11 +39,12 @@ public class Maintenance implements Intersection {
         }
     }
 
-    public void setupIntersection(int maxThroughput, int _freeLanes, int initialLanes) {
+    public void setupIntersection(int maxThroughput, int _freeLanes, int initialLanes, int task) {
         this.maxThroughput = maxThroughput;
         currentPassed = 0;
         destinationLane = 0;
         availableLanes = _freeLanes;
+        this.task = task;
 
         barrier = new CyclicBarrier(Main.carsNo);
         waitingLanes = new ArrayList<>(initialLanes);
@@ -66,7 +68,12 @@ public class Maintenance implements Intersection {
     @Override
     public void wait_in_intersection(Car car) {
         // Wait all cars to arrive at the "intersection" and assign them to a waiting lane
-        System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has reached the bottleneck");
+        if(task == 8) {
+            System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has reached the bottleneck");
+        } else {
+
+            System.out.println("Car " + car.getId() + " has come from lane number " + car.getStartDirection());
+        }
         waitingLanes.get(car.getStartDirection()).add(new CarInfo(car));
 
         try {
@@ -83,7 +90,11 @@ public class Maintenance implements Intersection {
                     // Check if this car is the car that should pass now
                     if(car.getId() == waitingLanes.get(carLane).peek().id) {
                         // Make the car pass
-                        System.out.println("Car " + car.getId() + " from side number " + carLane + " has passed the bottleneck");
+                        if(task == 8) {
+                            System.out.println("Car " + car.getId() + " from side number " + carLane + " has passed the bottleneck");
+                        } else {
+                            System.out.println("Car " + car.getId() + " from the lane " + carLane + " has entered lane number " + destinationLane);
+                        }
                         currentPassed++;
 
                         // Remove car from the queue
@@ -92,6 +103,10 @@ public class Maintenance implements Intersection {
                         if(waitingLanes.get(carLane).size() == 0) {
                             // Remove lane if it is empty
                             freeLanes.get(destinationLane).poll();
+
+                            if(task == 9) {
+                                System.out.println("The initial lane " + carLane + " has been emptied and removed from the new lane queue");
+                            }
 
                             // Make next lane active if enough cars passed
                             if(currentPassed == maxThroughput) {
@@ -103,18 +118,22 @@ public class Maintenance implements Intersection {
                             }
                         } else if(currentPassed == maxThroughput) {
                             currentPassed = 0;
+                            if(task == 9) {
+                                System.out.println("The initial lane " + carLane + " has no permits and is moved to the back of the new lane queue");
+                            }
 
                             // Put lane at the back of the queue if enough cars have passed
                             try {
                                 freeLanes.get(destinationLane).put(freeLanes.get(destinationLane).poll());
 
-                                // Make next lane active
-                                destinationLane++;
-                                if(destinationLane == availableLanes) {
-                                    destinationLane = 0;
-                                }
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
+                            }
+
+                            // Make next lane active
+                            destinationLane++;
+                            if(destinationLane == availableLanes) {
+                                destinationLane = 0;
                             }
                         }
 
