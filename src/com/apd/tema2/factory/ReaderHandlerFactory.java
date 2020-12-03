@@ -90,9 +90,9 @@ public class ReaderHandlerFactory {
                 String[] line = br.readLine().split(" ");
                 Main.intersection = IntersectionFactory.getIntersection(handlerType9);
 
-                int maxCars = Integer.parseInt(line[0]);
+                int freeLanes = Integer.parseInt(line[0]);
                 int initialLanes = Integer.parseInt(line[1]);
-                int freeLanes = Integer.parseInt(line[2]);
+                int maxCars = Integer.parseInt(line[2]);
                 ((Maintenance) Main.intersection).setupIntersection(maxCars, freeLanes, initialLanes, 9);
             };
             case "railroad" -> new ReaderHandler() {
