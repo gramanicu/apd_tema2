@@ -20,7 +20,8 @@ public class IntersectionFactory {
             entry("priority_intersection", new PriorityIntersection()),
             entry("crosswalk", new Crosswalk()),
             entry("simple_maintenance", new Maintenance()),
-            entry("complex_maintenance", new Maintenance())
+            entry("complex_maintenance", new Maintenance()),
+            entry("railroad", new Railroad())
     );
 
     public static Intersection getIntersection(String handlerType) {

@@ -1,6 +1,7 @@
 package com.apd.tema2.factory;
 
 import com.apd.tema2.Main;
+import com.apd.tema2.entities.Intersection;
 import com.apd.tema2.entities.Pedestrians;
 import com.apd.tema2.entities.ReaderHandler;
 import com.apd.tema2.intersections.*;
@@ -14,20 +15,8 @@ import java.io.IOException;
 public class ReaderHandlerFactory {
 
     public static ReaderHandler getHandler(String handlerType) {
-        // simple semaphore intersection
-        // max random N cars roundabout (s time to exit each of them)
-        // roundabout with exactly one car from each lane simultaneously
-        // roundabout with exactly X cars from each lane simultaneously
-        // roundabout with at most X cars from each lane simultaneously
-        // entering a road without any priority
-        // crosswalk activated on at least a number of people (s time to finish all of them)
-        // road in maintenance - 1 lane 2 ways, X cars at a time
-        // road in maintenance - N lanes 2 ways, X cars at a time
-        // railroad blockage for T seconds for all the cars
-        // unmarked intersection
-        // cars racing
         return switch (handlerType) {
-            case "simple_semaphore" -> (handlerType1, br) -> Main.intersection = IntersectionFactory.getIntersection(handlerType1);
+            case "simple_semaphore", "railroad" -> (handlerType1, br) -> Main.intersection = IntersectionFactory.getIntersection(handlerType1);
             case "simple_n_roundabout" -> (handlerType2, br) -> {
                 String[] line = br.readLine().split(" ");
                 Main.intersection = IntersectionFactory.getIntersection(handlerType2);
@@ -94,12 +83,6 @@ public class ReaderHandlerFactory {
                 int initialLanes = Integer.parseInt(line[1]);
                 int maxCars = Integer.parseInt(line[2]);
                 ((Maintenance) Main.intersection).setupIntersection(maxCars, freeLanes, initialLanes, 9);
-            };
-            case "railroad" -> new ReaderHandler() {
-                @Override
-                public void handle(final String handlerType, final BufferedReader br) throws IOException {
-                    
-                }
             };
             default -> null;
         };
