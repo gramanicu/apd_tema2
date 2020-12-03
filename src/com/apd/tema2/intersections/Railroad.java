@@ -58,6 +58,11 @@ public class Railroad implements Intersection {
                 System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has started driving");
                 break;
             }
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
 
