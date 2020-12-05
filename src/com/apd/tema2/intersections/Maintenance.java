@@ -54,18 +54,21 @@ public class Maintenance implements Intersection {
         semaphore = new Semaphore(1);
 
         for (int i = 0; i < initialLanes; i++) {
-            waitingLanes.add(new ArrayBlockingQueue<CarInfo>(Main.carsNo));
+            waitingLanes.add(new ArrayBlockingQueue<>(Main.carsNo));
         }
 
         for (int i = 0; i < _freeLanes; i++) {
-            freeLanes.add(new ArrayBlockingQueue<Integer>(initialLanes));
+            freeLanes.add(new ArrayBlockingQueue<>(initialLanes));
         }
 
         // Assign waiting lanes to free lanes
-        for(int i = 0; i < initialLanes; i++) {
-            freeLanes.get(i % _freeLanes).add(i);
+        for(int i = 0; i < _freeLanes; i++) {
+            int start = (int) (i * ((float)initialLanes / _freeLanes));
+            int end = (int) ((i+1) * ((float)initialLanes / _freeLanes));
+            for(int j = start; j < end; j++) {
+                freeLanes.get(i).add(j);
+            }
         }
-
     }
 
     /**
