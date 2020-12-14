@@ -115,6 +115,16 @@ public class Maintenance implements Intersection {
 
         // Wait until this cars destination is active and it is the car that should pass
         int carLane = car.getStartDirection();
+
+        while (freeLanes.get(destinationLane).peek() == null) {
+            synchronized (this) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         while (carLane != freeLanes.get(destinationLane).peek() || car.getId() != waitingLanes.get(carLane).peek().id) {
             synchronized (this) {
                 try {
