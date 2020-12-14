@@ -28,7 +28,7 @@ public class Railroad implements Intersection {
             semaphore.acquire();
             queue.put(car.getId());
 
-            System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " stopped by the railroad");
+            System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has stopped by the railroad");
             semaphore.release();
             barrier.await();
         } catch (InterruptedException | BrokenBarrierException e) {
