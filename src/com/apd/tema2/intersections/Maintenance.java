@@ -99,7 +99,7 @@ public class Maintenance implements Intersection {
             e.printStackTrace();
         }
         waitingLanes.get(car.getStartDirection()).add(new CarInfo(car));
-        if(task == 8) {
+        if (task == 8) {
             System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has reached the bottleneck");
         } else {
 
@@ -113,65 +113,60 @@ public class Maintenance implements Intersection {
             e.printStackTrace();
         }
 
-        while (true) {
+        // Wait until this cars destination is active and it is the car that should pass
+        int carLane = car.getStartDirection();
+        while (carLane != freeLanes.get(destinationLane).peek() || car.getId() != waitingLanes.get(carLane).peek().id) {
             synchronized (this) {
-                int carLane = car.getStartDirection();
-
-                // Check that the destination is available
-                if(freeLanes.get(destinationLane).size() == 0) {
-                    setNextActive();
-                }
-
-                // Check if this car is on a active lane
-                if(carLane == freeLanes.get(destinationLane).peek()) {
-                    // Check if this car is the car that should pass now
-                    if(car.getId() == waitingLanes.get(carLane).peek().id) {
-                        // Make the car pass
-                        if(task == 8) {
-                            System.out.println("Car " + car.getId() + " from side number " + carLane + " has passed the bottleneck");
-                        } else {
-                            System.out.println("Car " + car.getId() + " from the lane " + carLane + " has entered lane number " + destinationLane);
-                        }
-                        currentPassed++;
-
-                        // Remove car from the queue
-                        waitingLanes.get(carLane).poll();
-
-                        if(waitingLanes.get(carLane).size() == 0) {
-                            // Remove lane if it is empty
-                            freeLanes.get(destinationLane).poll();
-
-                            if(task == 9) {
-                                System.out.println("The initial lane " + carLane + " has been emptied and removed from the new lane queue");
-                            }
-
-                            // Make next lane active if enough cars passed
-                            if(currentPassed == maxThroughput) {
-                                currentPassed = 0;
-                                setNextActive();
-                            }
-                        } else if(currentPassed == maxThroughput) {
-                            currentPassed = 0;
-                            if (task == 9) {
-                                System.out.println("The initial lane " + carLane + " has no permits and is moved to the back of the new lane queue");
-                            }
-
-                            // Put lane at the back of the queue if enough cars have passed
-                            try {
-                                freeLanes.get(destinationLane).put(freeLanes.get(destinationLane).poll());
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-
-                            setNextActive();
-                        }
-
-                        break;
-                    }
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
 
+        // Make the car pass
+        if (task == 8) {
+            System.out.println("Car " + car.getId() + " from side number " + carLane + " has passed the bottleneck");
+        } else {
+            System.out.println("Car " + car.getId() + " from the lane " + carLane + " has entered lane number " + destinationLane);
+        }
+        currentPassed++;
 
+        // Remove car from the queue
+        waitingLanes.get(carLane).poll();
+
+        if (waitingLanes.get(carLane).size() == 0) {
+            // Remove lane if it is empty
+            freeLanes.get(destinationLane).poll();
+
+            if (task == 9) {
+                System.out.println("The initial lane " + carLane + " has been emptied and removed from the new lane queue");
+            }
+
+            // Make next lane active if enough cars passed
+            if (currentPassed == maxThroughput) {
+                currentPassed = 0;
+                setNextActive();
+            }
+        } else if (currentPassed == maxThroughput) {
+            currentPassed = 0;
+            if (task == 9) {
+                System.out.println("The initial lane " + carLane + " has no permits and is moved to the back of the new lane queue");
+            }
+
+            // Put lane at the back of the queue if enough cars have passed
+            try {
+                freeLanes.get(destinationLane).put(freeLanes.get(destinationLane).poll());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            setNextActive();
+        }
+
+        synchronized (this) {
+            notifyAll();
+        }
     }
 }
