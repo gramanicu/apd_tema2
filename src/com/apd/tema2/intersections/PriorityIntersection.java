@@ -38,13 +38,18 @@ public class PriorityIntersection implements Intersection {
             // Low priority cars have to wait in the intersection
             while (highPriorityQueue.size() != 0 || lowPriorityQueue.peek() != car.getId()) {
                 try {
-                    Thread.sleep(100);
+                    synchronized (this) {
+                        wait();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
             System.out.println("Car " + car.getId() + " with low priority has entered the intersection");
+            synchronized (this) {
+                notifyAll();
+            }
             lowPriorityQueue.poll();
         } else {
             System.out.println("Car " + car.getId() + " with high priority has entered the intersection");
@@ -54,7 +59,11 @@ public class PriorityIntersection implements Intersection {
                 e.printStackTrace();
             }
             System.out.println("Car " + car.getId() + " with high priority has exited the intersection");
-            highPriorityQueue.poll();
+            synchronized (this) {
+                highPriorityQueue.poll();
+                notifyAll();
+            }
+
         }
     }
 }
