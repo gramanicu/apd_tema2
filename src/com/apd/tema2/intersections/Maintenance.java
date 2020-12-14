@@ -10,12 +10,13 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class Maintenance implements Intersection {
     private int maxThroughput;
-    private int destinationLane;
-    private int currentPassed;
+    private AtomicInteger destinationLane;
+    private AtomicInteger currentPassed;
     private int availableLanes;
     private int task;
 
@@ -43,8 +44,8 @@ public class Maintenance implements Intersection {
 
     public void setupIntersection(int maxThroughput, int _freeLanes, int initialLanes, int task) {
         this.maxThroughput = maxThroughput;
-        currentPassed = 0;
-        destinationLane = 0;
+        currentPassed = new AtomicInteger(0);
+        destinationLane = new AtomicInteger(0);
         availableLanes = _freeLanes;
         this.task = task;
 
@@ -75,15 +76,14 @@ public class Maintenance implements Intersection {
      * Set next active lane
      */
     private void setNextActive() {
-        destinationLane++;
-        if (destinationLane == availableLanes) {
-            destinationLane = 0;
+        if (destinationLane.incrementAndGet() == availableLanes) {
+            destinationLane.set(0);
         }
 
-        if(freeLanes.get(destinationLane).size() == 0) {
+        if(freeLanes.get(destinationLane.get()).size() == 0) {
             for (int i = 0; i < availableLanes; i++) {
                 if(freeLanes.get(i).size() != 0) {
-                    destinationLane = i;
+                    destinationLane.set(i);
                     break;
                 }
             }
@@ -113,19 +113,13 @@ public class Maintenance implements Intersection {
             e.printStackTrace();
         }
 
+        if(freeLanes.get(destinationLane.get()).size() == 0) {
+            setNextActive();
+        }
+
         // Wait until this cars destination is active and it is the car that should pass
         int carLane = car.getStartDirection();
-
-        while (freeLanes.get(destinationLane).peek() == null) {
-            synchronized (this) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        while (carLane != freeLanes.get(destinationLane).peek() || car.getId() != waitingLanes.get(carLane).peek().id) {
+        while (carLane != freeLanes.get(destinationLane.get()).peek() || car.getId() != waitingLanes.get(carLane).peek().id) {
             synchronized (this) {
                 try {
                     wait();
@@ -139,35 +133,35 @@ public class Maintenance implements Intersection {
         if (task == 8) {
             System.out.println("Car " + car.getId() + " from side number " + carLane + " has passed the bottleneck");
         } else {
-            System.out.println("Car " + car.getId() + " from the lane " + carLane + " has entered lane number " + destinationLane);
+            System.out.println("Car " + car.getId() + " from the lane " + carLane + " has entered lane number " + destinationLane.get());
         }
-        currentPassed++;
+        currentPassed.incrementAndGet();
 
         // Remove car from the queue
         waitingLanes.get(carLane).poll();
 
         if (waitingLanes.get(carLane).size() == 0) {
             // Remove lane if it is empty
-            freeLanes.get(destinationLane).poll();
+            freeLanes.get(destinationLane.get()).poll();
 
             if (task == 9) {
                 System.out.println("The initial lane " + carLane + " has been emptied and removed from the new lane queue");
             }
 
             // Make next lane active if enough cars passed
-            if (currentPassed == maxThroughput) {
-                currentPassed = 0;
+            if (currentPassed.get() == maxThroughput) {
+                currentPassed.set(0);
                 setNextActive();
             }
-        } else if (currentPassed == maxThroughput) {
-            currentPassed = 0;
+        } else if (currentPassed.get() == maxThroughput) {
+            currentPassed.set(0);
             if (task == 9) {
                 System.out.println("The initial lane " + carLane + " has no permits and is moved to the back of the new lane queue");
             }
 
             // Put lane at the back of the queue if enough cars have passed
             try {
-                freeLanes.get(destinationLane).put(freeLanes.get(destinationLane).poll());
+                freeLanes.get(destinationLane.get()).put(freeLanes.get(destinationLane.get()).poll());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
