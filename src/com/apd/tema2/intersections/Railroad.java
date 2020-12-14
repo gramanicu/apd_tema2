@@ -56,8 +56,8 @@ public class Railroad implements Intersection {
             }
         }
 
-        queue.poll();
         System.out.println("Car " + car.getId() + " from side number " + car.getStartDirection() + " has started driving");
+        queue.poll();
 
         synchronized (this) {
             notifyAll();
