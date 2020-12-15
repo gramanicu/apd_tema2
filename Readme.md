@@ -53,6 +53,10 @@ This intersection was the hardest to implement (and in the end, I couldn't, as i
 
 At the start (during the parsing of the input and the setup of the intersection), "source lanes" are assigned to the "destination lanes". The `freeLanes` (destination) variable stores an array with the id of its assigned `waitingLanes` (source).
 
-One at a time (using a semaphore with 1 ticket) cars enter their waiting lanes. Then, they wait for all the other cars (barrier).
+At he beginning, cars enter their waiting lanes. Then, they wait for all the other cars (barrier). Each car will wait for it's turn to enter the intersection and go from the `waitingLanes` to the `freeLanes`. If a waiting car is empty, it is removed. After a car exits the intersection, `notifyAll` is called so that another car will pass the intersection.
+
+### Ex. 10 - `Railroad`
+
+One at a time, the cars will enter a queue to wait the "train" to pass (barrier). After the train has passed (all cars reached the intersection), we print the message from one of the threads (the car with the id 0). Another barrier is used to "prepare" all the cars to exit the intersection, and then, they will leave the "railroad crossing" in the same order they entered.
 
 © 2020 Grama Nicolae
