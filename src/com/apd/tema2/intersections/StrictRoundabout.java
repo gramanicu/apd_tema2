@@ -40,7 +40,7 @@ public class StrictRoundabout implements Intersection {
         selectBarrier = new CyclicBarrier(maxCars);
         occupiedDirections = new ArrayList<>();
 
-        // Create the direction (and cars per direction) locks
+        // Create the direction (and cars per direction) barriers
         for (int i = 0; i < directions; i++) {
             occupiedDirections.add(new Semaphore(carsPerDirection));
         }
@@ -64,11 +64,13 @@ public class StrictRoundabout implements Intersection {
             System.out.println("Car " + car.getId() + " has reached the roundabout");
         }
 
-        // Wait all cars to arrive at the roundabout
-        try {
-            barrier.await();
-        } catch (InterruptedException | BrokenBarrierException e) {
-            e.printStackTrace();
+        if(taskNumber == 4) {
+            // Wait all cars to arrive at the roundabout
+            try {
+                barrier.await();
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            }
         }
 
         // Wait for all lanes to be occupied and enter the roundabout
@@ -76,9 +78,11 @@ public class StrictRoundabout implements Intersection {
             occupiedDirections.get(car.getStartDirection()).acquire();
             sem.acquire();
 
-            // Wait all cars to be selected to enter roundabout - Task 4
-            if (taskNumber == 4) {
-                System.out.println("Car " + car.getId() + " was selected to enter the roundabout from lane " + car.getStartDirection());
+            // Wait all cars to be selected to enter roundabout - Task 3 & 4
+            if (taskNumber != 5) {
+                if(taskNumber == 4) {
+                    System.out.println("Car " + car.getId() + " was selected to enter the roundabout from lane " + car.getStartDirection());
+                }
                 try {
                     selectBarrier.await();
                 } catch (InterruptedException | BrokenBarrierException e) {
